@@ -7,9 +7,12 @@ import com.tandem6.coffeeshop.payment.domain.model.aggregates.Payment;
 import com.tandem6.coffeeshop.payment.interfaces.rest.dto.CreatePaymentResource;
 import com.tandem6.coffeeshop.payment.interfaces.rest.transform.CreatePaymentCommandDTOAssembler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -25,10 +28,15 @@ public class PaymentRestController {
     }
 
     @PostMapping("/payment")
-    public CreatePaymentId createPayment(@Valid @RequestBody CreatePaymentResource createPaymentResource) {
+    public ResponseEntity<CreatePaymentId> createPayment(@Valid @RequestBody CreatePaymentResource createPaymentResource) {
         CreatePaymentId createPaymentId = paymentCommandService.createPayment(
         CreatePaymentCommandDTOAssembler.toCommandFromDTO(createPaymentResource));
-        return createPaymentId;
+        final URI uri =
+            MvcUriComponentsBuilder.fromController(getClass())
+            .path("/{id}")
+            .buildAndExpand(createPaymentId.getCreatePaymentId())
+            .toUri();
+        return ResponseEntity.created(uri).body(createPaymentId);
     }
 
     @GetMapping("/payment")

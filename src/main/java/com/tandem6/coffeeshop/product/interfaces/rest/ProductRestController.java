@@ -7,9 +7,12 @@ import com.tandem6.coffeeshop.product.domain.model.aggregates.Product;
 import com.tandem6.coffeeshop.product.interfaces.rest.dto.CreateProductResource;
 import com.tandem6.coffeeshop.product.interfaces.rest.transform.CreateProductCommandDTOAssembler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -25,10 +28,15 @@ public class ProductRestController {
     }
 
     @PostMapping("/product")
-    public CreateProductId createProduct(@Valid @RequestBody CreateProductResource createProductResource) {
+    public ResponseEntity<CreateProductId> createProduct(@Valid @RequestBody CreateProductResource createProductResource) {
         CreateProductId createProductId = productCommandService.createProduct(
         CreateProductCommandDTOAssembler.toCommandFromDTO(createProductResource));
-        return createProductId;
+        final URI uri =
+                MvcUriComponentsBuilder.fromController(getClass())
+                        .path("/{id}")
+                        .buildAndExpand(createProductId.getCreateProductId())
+                        .toUri();
+        return ResponseEntity.created(uri).body(createProductId);
     }
 
     @GetMapping("/product")

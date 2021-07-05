@@ -4,6 +4,7 @@ import com.tandem6.coffeeshop.payment.domain.model.commands.CreatePaymentCommand
 import com.tandem6.coffeeshop.payment.domain.model.valueobjects.PaymentBaseInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper=false)
 @AllArgsConstructor
 public class Payment extends AbstractAggregateRoot<Payment> {
 
